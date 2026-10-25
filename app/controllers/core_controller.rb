@@ -11,20 +11,21 @@ class CoreController < ApplicationController
     @connected_to_quickbooks = !!@org.quickbooks_token
     @connected_to_stripe = !!@org.stripe_token
     #variables for highcharts
-    @customer_count = SalesforceAccount.count(:conditions=>'org_id = @org.id')
-    @opportunity_count = SalesforceOpportunity.count(:conditions=>'org_id = @org.id')
-    @open_invoices_count = QuickbooksInvoice.count(:conditions=>'org_id = @org.id AND is_active = TRUE')
-    
+    @customer_count = SalesforceAccount.where(org_id: @org.id).count
+    @opportunity_count = SalesforceOpportunity.where(org_id: @org.id).count
+    # quickbooks_invoices has no is_active column; an open QuickBooks invoice is one with a balance left to pay
+    @open_invoices_count = QuickbooksInvoice.where(org_id: @org.id).where('balance > 0').count
+
     #pull data for main graph
     @invoices = Array.new(30)
-    if QuickbooksInvoice.count(:conditions=>'org_id = @org.id') > 0
+    if QuickbooksInvoice.where(org_id: @org.id).count > 0
       QuickbooksInvoice.all.each do |f|
         if f.date_created.month == Time.now.month
           @invoices[f.date_created.day-1] = @invoices[f.date_created.day-1].to_f + f.total_amt.to_f
         end
       end
     end
-    if QuickbooksPayment.count(:conditions=>'org_id = @org.id') > 0
+    if QuickbooksPayment.where(org_id: @org.id).count > 0
       @payments = Array.new(30)
       QuickbooksPayment.all.each do |f|
         if f.date_created.month == Time.now.month
@@ -65,7 +66,7 @@ class CoreController < ApplicationController
       session[:position] = params[:position]
     end
     @user.save
-    redirect_to :back
+    redirect_back_or_to core_run_path
   end
   
   #same as welcome controller invite_user, could probably be merged into application controller
@@ -75,7 +76,7 @@ class CoreController < ApplicationController
     @email = params[:email]
     InviteMailer.invite_mail(@email,@org_name).deliver_now
     flash[:success] = "User Invited!"
-    redirect_to :back
+    redirect_back_or_to core_run_path
   end
   
   def logout

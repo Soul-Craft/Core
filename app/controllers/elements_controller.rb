@@ -6,17 +6,17 @@ class ElementsController < ApplicationController
   def show
     @app = params[:app_name]
     if @app == "link_CRM" || @app == "a_CRM"
-      redirect_to CloudElements.salesforce_oauthurl
+      redirect_to CloudElements.salesforce_oauthurl, allow_other_host: true
     elsif @app == "link_accounting" || @app == "a_accounting"
-      redirect_to CloudElements.quickbooks_oauthtoken
+      redirect_to CloudElements.quickbooks_oauthtoken, allow_other_host: true
     elsif @app == "link_ecommerce" || @app == "a_ecommerce"
-      redirect_to "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_84qPNMWLjrw7mUSm1MMKofy3ChAglggB&scope=read_write"
+      redirect_to "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_84qPNMWLjrw7mUSm1MMKofy3ChAglggB&scope=read_write", allow_other_host: true
     end
   end
 
   def callback
     @uri_params = params
-    redirect_to "https://corecloudapp.herokuapp.com/core/run?view=admin"
+    redirect_to "https://corecloudapp.herokuapp.com/core/run?view=admin", allow_other_host: true
     @state = @uri_params[:state]
     if @state == "sfdc"
       CloudElements.salesforce_instance(session[:org], @uri_params[:code])
@@ -30,7 +30,7 @@ class ElementsController < ApplicationController
 
   def stripe_callback
     @uri_params = params
-    redirect_to "https://corecloudapp.herokuapp.com/core/run?view=admin"
+    redirect_to "https://corecloudapp.herokuapp.com/core/run?view=admin", allow_other_host: true
     CloudElements.stripe_oauth(session[:org], @uri_params[:code])
     CloudElements.stripe_oauth_refresh
   end

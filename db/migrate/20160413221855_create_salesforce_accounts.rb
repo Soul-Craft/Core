@@ -1,4 +1,4 @@
-class CreateSalesforceAccounts < ActiveRecord::Migration
+class CreateSalesforceAccounts < ActiveRecord::Migration[4.2]
   def change
     create_table :salesforce_accounts do |t|
       t.timestamps null: false

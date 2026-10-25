@@ -1,4 +1,4 @@
-class CreateSalesforceReports < ActiveRecord::Migration
+class CreateSalesforceReports < ActiveRecord::Migration[4.2]
   def change
     create_table :salesforce_reports do |t|
       t.integer :org_id

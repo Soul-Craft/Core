@@ -6,8 +6,9 @@ Rails.configuration.stripe = {
 Stripe.api_key = Rails.configuration.stripe[:secret_key]
 STRIPE_PUBLIC_KEY = Rails.configuration.stripe[:publishable_key]
 
-StripeEvent.event_retriever = Proc.new do |params|
-  if params[:type] == "charge.succeeded"
-    ChargeSucceeded.webhook(params)
-  end
+# stripe_event 2 verifies each webhook's Stripe-Signature against the endpoint's signing secret (whsec_...).
+StripeEvent.signing_secret = ENV['STRIPE_SIGNING_SECRET']
+
+StripeEvent.subscribe 'charge.succeeded' do |event|
+  ChargeSucceeded.webhook(event)
 end

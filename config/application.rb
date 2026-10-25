@@ -1,6 +1,15 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
-require 'rails/all'
+# The frameworks Rails 4.2's 'rails/all' loaded (Active Storage, Action Cable, Action Mailbox and Action Text are
+# not used).
+require 'rails'
+require 'active_model/railtie'
+require 'active_job/railtie'
+require 'active_record/railtie'
+require 'action_controller/railtie'
+require 'action_mailer/railtie'
+require 'action_view/railtie'
+require 'rails/test_unit/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -8,6 +17,13 @@ Bundler.require(*Rails.groups)
 
 module Core
   class Application < Rails::Application
+    # Initialize configuration defaults for the current Rails version.
+    config.load_defaults 8.1
+
+    # Rails 5 made belongs_to required. The sync callbacks create records whose parent may not exist yet (an
+    # invoice for a customer that hasn't synced), so keep the optional belongs_to this app was written for.
+    config.active_record.belongs_to_required_by_default = false
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -19,9 +35,5 @@ module Core
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
-
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
-
   end
 end

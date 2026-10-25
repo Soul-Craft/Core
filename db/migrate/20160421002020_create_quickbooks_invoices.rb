@@ -1,4 +1,4 @@
-class CreateQuickbooksInvoices < ActiveRecord::Migration
+class CreateQuickbooksInvoices < ActiveRecord::Migration[4.2]
   def change
     create_table :quickbooks_invoices do |t|
       t.timestamps null: false

@@ -6,7 +6,7 @@
 
   <%= stylesheet_link_tag '/stylesheets/core.css', media: 'all' %>
   <%= csrf_meta_tags %>
-  <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+  <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha384-fgGyf7Mo7DURSOMnOy7ed+dkq5Job205Gnzu6QIg0BOHKaqt4D76Dt8VlDCzcMHV" crossorigin="anonymous"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
 
   <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
@@ -31,7 +31,8 @@
 </div>
 <%= yield %>
 <%= include_gon %>
-<%= javascript_include_tag 'application' %>
+<%# Propshaft has no require_tree: the files the old Sprockets manifest bundled, in its (alphabetical) order. %>
+<%= javascript_include_tag 'charts', 'core', 'highcharts' %>
 
 </body>
 </html>

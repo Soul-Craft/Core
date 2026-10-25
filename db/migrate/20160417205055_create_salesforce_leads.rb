@@ -1,4 +1,4 @@
-class CreateSalesforceLeads < ActiveRecord::Migration
+class CreateSalesforceLeads < ActiveRecord::Migration[4.2]
   def change
     create_table :salesforce_leads do |t|
       t.string :lead_id

@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Ruby from .ruby-version; bundle install from Gemfile.lock, cached.
+      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
+        with:
+          bundler-cache: true
+      - name: Load check (eager-load every constant)
+        run: bin/rails zeitwerk:check
+      - name: Tests (CI=true eager-loads the app)
+        run: bin/rails db:test:prepare test
+      - name: Production boot and asset build
+        run: bin/rails assets:precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE_DUMMY: 1
+
+  # Owner, 2026-10-25: every Dependabot update merges once all other jobs pass, majors too.
+  dependabot-merge:
+    needs: [test]
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    permissions: {contents: write, pull-requests: write}
+    steps:
+      - run: gh pr merge --squash --delete-branch "$PR"
+        env: {GH_TOKEN: "${{ github.token }}", PR: "${{ github.event.pull_request.html_url }}"}
