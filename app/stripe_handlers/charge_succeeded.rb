@@ -1,8 +1,8 @@
 class ChargeSucceeded < ApplicationController
 
   def self.webhook(event)
-    # stripe handler for charge.succeeded event
-    stripe_token = event[:user_id]
+    # stripe handler for charge.succeeded event (a verified Stripe::Event; Connect's user_id is now account)
+    stripe_token = event[:account]
     puts stripe_token
 
     # reassign stripe api key to fit test secret key of account matching stripe_token

@@ -1,50 +1,44 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  # In the development environment your application's code is reloaded on
-  # every request. This slows down response time but is perfect for development
-  # since you don't have to restart the web server when you make code changes.
-  config.cache_classes = false
+  # Code is not reloaded between requests.
+  config.enable_reloading = false
 
-  # Do not eager load code on boot.
-  config.eager_load = false
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  config.eager_load = true
 
-  # Show full error reports and disable caching.
-  config.consider_all_requests_local       = true
-  config.action_controller.perform_caching = false
+  # Full error reports are disabled.
+  config.consider_all_requests_local = false
 
-  # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :log
+  # Cache digest stamped assets for far-future expiry. (Replaces rails_12factor's static asset serving.)
+  config.public_file_server.headers = { 'cache-control' => "public, max-age=#{1.year.to_i}" }
 
-  # Raise an error on page load if there are pending migrations.
-  config.active_record.migration_error = :page_load
+  # Log to STDOUT with the current request id as a default log tag. (Replaces rails_12factor's stdout logging.)
+  config.log_tags = [ :request_id ]
+  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
 
-  # Debug mode disables concatenation and preprocessing of assets.
-  # This option may cause significant delays in view rendering with a large
-  # number of complex assets.
-  config.assets.debug = true
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
+  config.log_level = ENV.fetch('RAILS_LOG_LEVEL', 'info')
 
-  # Asset digests allow you to set far-future HTTP expiration dates on all assets,
-  # yet still be able to expire them through the digest params.
-  config.assets.digest = true
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
 
-  # Adds additional error checking when serving assets at runtime.
-  # Checks for improperly declared sprockets dependencies.
-  # Raises helpful error messages.
-  config.assets.raise_runtime_errors = true
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation cannot be found).
+  config.i18n.fallbacks = true
 
-  # Raises error for missing translations
-  # config.action_view.raise_on_missing_translations = true
-  
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
+
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_deliveries = true
-  #smtp settings for email
+  #smtp settings for email (credentials from the environment, never the repository)
   config.action_mailer.smtp_settings = {
     :address              => "smtp.sendgrid.net",
     :port                 => 587,
-    :user_name            => "developers@corecloudapp.com",
-    :password             => "Sendgrid101",
+    :user_name            => ENV['SMTP_USERNAME'],
+    :password             => ENV['SMTP_PASSWORD'],
     :authentication       => "plain",
     :enable_starttls_auto => 'true',
     :openssl_verify_mode => 'none'

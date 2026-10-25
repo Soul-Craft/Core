@@ -1,0 +1,18 @@
+# PostgreSQL. No credentials here: set DATABASE_URL (Heroku, CI) or use the local socket.
+# Rails merges DATABASE_URL into the current environment's settings below.
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: core_development
+
+test:
+  <<: *default
+  database: core_test
+
+production:
+  <<: *default
+  database: core_production

@@ -1,4 +1,4 @@
-class CreateQuickbooksReports < ActiveRecord::Migration
+class CreateQuickbooksReports < ActiveRecord::Migration[4.2]
   def change
     create_table :quickbooks_reports do |t|
       t.string :report_id

@@ -1,4 +1,4 @@
-class CreateStripeCustomers < ActiveRecord::Migration
+class CreateStripeCustomers < ActiveRecord::Migration[4.2]
   def change
     create_table :stripe_customers do |t|
       t.string :account_id, primary: true

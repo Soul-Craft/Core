@@ -1,4 +1,4 @@
-class CreateSalesforceOpportunities < ActiveRecord::Migration
+class CreateSalesforceOpportunities < ActiveRecord::Migration[4.2]
   def change
     create_table :salesforce_opportunities do |t|
       t.timestamps null: false
